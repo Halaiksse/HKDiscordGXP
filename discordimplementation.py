@@ -28,8 +28,8 @@ async def Help(ctx):
     embed1.add_field(name=".isOnline", value="Sends a message if the bot is online.", inline=False)
     embed1.add_field(name=".Help", value="I think you can figure out this one by yourself.", inline=False)
     embed1.add_field(name=".under25k", value="Returns a list of non exempted members under 25k", inline=False)
-    embed1.add_field(name=".ListAdd", value="Adds the UUID of a player to the GXP exemption list", inline=False)
-    embed1.add_field(name=".ListRemove", value="Remove the UUID of a player from the GXP exemption list", inline=False)
+    embed1.add_field(name=".ListAdd", value="Adds the UUID of a player to the GXP exemption list (Input IGN or UUID)", inline=False)
+    embed1.add_field(name=".ListRemove", value="Remove the UUID of a player from the GXP exemption list (Input IGN or UUID)", inline=False)
     embed1.add_field(name=".ListShow", value="Shows the GXP exemption list", inline=False)
     await ctx.send(embed=embed1)
 
