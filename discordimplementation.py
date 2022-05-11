@@ -1,5 +1,6 @@
  # bot.py
 from random import randrange
+from uuid import UUID
 import discord
 from discord.ext import commands # This is just an extension to make commands a lot easier
 import requests
@@ -83,17 +84,23 @@ async def under25k(ctx):
 @bot.command()
 async def ListAdd(ctx, P_UUID):
     ErrorFind = False
+    PlayerIGN = False
+    x = requests.get("https://playerdb.co/api/player/minecraft/" + P_UUID)
+    x = x.json()
+    if (x.get('success') == True and len(P_UUID) <= 16):
+        PLAYER_UUID = x['data']['player']['raw_id']
+        PlayerIGN = True
+        
+
     #Check if format is valid
-    if (len(P_UUID)!=32):
+    if (len(P_UUID)!=32 and PlayerIGN == False):
         await ctx.send("UUID Format incorrect, try to enter the raw/trimmed UUID")
         ErrorFind = True
     #check if uuid exists    
-    x = requests.get("https://playerdb.co/api/player/minecraft/" + P_UUID)
-    x = x.json()
     if (x.get('error') == True and ErrorFind == False):
         await ctx.send("I was unable to find the player.")
         ErrorFind = True
-    #check if player exists
+    #check if player is in safelist already
     InitList = open("safelist.txt", "r")
     currentplayers = InitList.readlines()
     InitList.close()
@@ -104,14 +111,22 @@ async def ListAdd(ctx, P_UUID):
 
     #add to txt
     if (ErrorFind == False):
+        if (PlayerIGN == False):
+            PLAYER_UUID = P_UUID
         PeopleTXT = open('safelist.txt', 'a')
-        PeopleTXT.write(str(P_UUID) + "\n")
+        PeopleTXT.write(str(PLAYER_UUID) + "\n")
         PeopleTXT.close
         await ctx.send("The player has been added to the list")
 
 @bot.command()
 async def ListRemove(ctx, P_UUID):
     IGNFound = False
+    x = requests.get("https://playerdb.co/api/player/minecraft/" + P_UUID)
+    x = x.json()
+    if (x.get('success') == True and len(P_UUID) <= 16):
+        PLAYER_UUID = x['data']['player']['raw_id']
+    else:
+        PLAYER_UUID = P_UUID
 
     InitList = open("safelist.txt", "r")
     currentplayers = InitList.readlines()
@@ -119,9 +134,9 @@ async def ListRemove(ctx, P_UUID):
 
     Safelist = open("safelist.txt", "w")
     for line in currentplayers:
-        if line.strip("\n") != str(P_UUID):
+        if line.strip("\n") != str(PLAYER_UUID):
             Safelist.write(line)
-        if line.strip("\n") == str(P_UUID):
+        if line.strip("\n") == str(PLAYER_UUID):
             IGNFound = True
     Safelist.close()
     if IGNFound:
